@@ -1,31 +1,38 @@
-import { TestBed } from '@angular/core/testing';
+import { FormBuilderTypeSafe } from 'angular-typesafe-reactive-forms-helper';
+import { Shallow } from 'shallow-render';
 import { AppComponent } from './app.component';
+import { AppModule } from './app.module';
 
 describe('AppComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
-      ],
-    }).compileComponents();
+  let shallow: Shallow<AppComponent>;
+
+  beforeEach(() => {
+    shallow = new Shallow(AppComponent, AppModule).dontMock(
+      FormBuilderTypeSafe
+    );
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+  describe('fullNameWithGetSafe', () => {
+    it('should return users full name', async () => {
+      const { instance } = await shallow.render();
+      instance.userInfoForm.patchValue({
+        firstName: 'Steven',
+        lastName: 'Smith',
+      });
+
+      expect(instance.fullNameWithGetSafe).toBe('Steven Smith');
+    });
   });
 
-  it(`should have as title 'angular-forms-coverage-error'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('angular-forms-coverage-error');
-  });
+  describe('fullNameWithControls', () => {
+    it('should return users full name', async () => {
+      const { instance } = await shallow.render();
+      instance.userInfoForm.patchValue({
+        firstName: 'Steven',
+        lastName: 'Smith',
+      });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('angular-forms-coverage-error app is running!');
+      expect(instance.fullNameWithControls).toBe('Steven Smith');
+    });
   });
 });
